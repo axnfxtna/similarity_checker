@@ -31,6 +31,17 @@ if st.button("Check"):
 
                 # Show explanations (if requested)
                 if explanation:
+                    results = data.get("results", {})
+                    percentage_results = results.get("percentage_results", [])
+                    overall_avg = results.get("overall_avg", 0)
+
+                    # Show result
+                    st.subheader("Result")
+                    st.markdown(
+                        f"<span style='font-size:1.2rem; font-weight:normal;'> 📄 Average similarity percentage: {overall_avg}% </span>",
+                        unsafe_allow_html=True
+                    )
+                    
                     st.subheader("Explanation")
                     explanations = data.get("explanations", [])
                     for item in explanations:
