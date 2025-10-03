@@ -71,6 +71,25 @@ A Streamlit web app for check similarity of the documents with the vector databa
    ```bash
    configs/configs.yaml
    ```
+   - If you want to use cpu to run all the process, edit docker-compose.yml
+   ```bash
+   ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - "11435:11434"
+    environment:
+      - OLLAMA_DEVICE=cpu          
+      - OLLAMA_LISTEN_BACKLOG=6000
+    ulimits:
+      nofile:
+        soft: 6000
+        hard: 6000
+    networks:
+      - ragdoc-network
+    volumes:
+      - ollama_models:/root/.ollama
+    ```
 
 **7. Usage**
    - edit the configs, docker-compose, and Dockerfile to be your dataset
