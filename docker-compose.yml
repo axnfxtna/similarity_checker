@@ -15,7 +15,8 @@ services:
     depends_on:
       - ollama  
     environment:
-      - OLLAMA_HOST=http://ollama:11434  
+      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_LISTEN_BACKLOG=6000
 
   streamlit-app:
     build:
@@ -51,6 +52,11 @@ services:
     runtime: nvidia
     environment:
       - OLLAMA_DEVICE=gpu
+      - OLLAMA_LISTEN_BACKLOG=6000
+    ulimits:
+      nofile:
+        soft: 6000
+        hard: 6000
     networks:
       - ragdoc-network
     volumes:
