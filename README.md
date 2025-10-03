@@ -62,7 +62,36 @@ A Streamlit web app for check similarity of the documents with the vector databa
     Creating milvus-standalone ... done
     ```
 
+
 **6. Configuration**
+- Create a .env file in the project root:
+   ```ini
+   URI="http://milvus-standalone:19530"
+   ```
+   - Model, DB, and embedding settings can also be modified in:
+   ```bash
+   configs/configs.yaml
+   ```
+   - If you want to use cpu to run all the process, edit docker-compose.yml
+   ```yml
+   ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - "11435:11434"
+    environment:
+      - OLLAMA_DEVICE=cpu          
+      - OLLAMA_LISTEN_BACKLOG=6000
+    ulimits:
+      nofile:
+        soft: 6000
+        hard: 6000
+    networks:
+      - ragdoc-network
+    volumes:
+      - ollama_models:/root/.ollama
+    ```
+**7. Usage**
    - Create a .env file in the project root:
    ```ini
    URI="http://milvus-standalone:19530"
@@ -72,7 +101,7 @@ A Streamlit web app for check similarity of the documents with the vector databa
    configs/configs.yaml
    ```
    - If you want to use cpu to run all the process, edit docker-compose.yml
-   ```bash
+   ```yml
    ollama:
     image: ollama/ollama:latest
     restart: unless-stopped
@@ -91,8 +120,9 @@ A Streamlit web app for check similarity of the documents with the vector databa
       - ollama_models:/root/.ollama
     ```
 
-**7. Usage**
+
    - edit the configs, docker-compose, and Dockerfile to be your dataset
+
    ```bash
     - in configs
     collection_name: 'file'
