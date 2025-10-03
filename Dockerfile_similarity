@@ -1,0 +1,27 @@
+# Dockerfile
+FROM python:3.11.13
+
+# Set working directory
+WORKDIR /app
+
+# Expose ports
+EXPOSE 8005
+EXPOSE 19530  
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y curl unzip && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL https://ollama.com/install.sh | bash
+
+# Copy app files
+COPY similarity_service.py /app/similarity_service.py
+COPY lib /app/lib
+COPY configs /app/configs
+COPY requirements.txt .
+COPY .env .
+COPY dataset /app/dataset
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Start FastAPI app
+CMD ["uvicorn", "similarity_service:app", "--host", "0.0.0.0", "--port", "8005"]

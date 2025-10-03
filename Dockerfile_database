@@ -1,0 +1,17 @@
+FROM python:3.11.13
+
+WORKDIR /app
+
+COPY requirements.txt .
+COPY lib /app/lib
+COPY configs /app/configs
+COPY requirements.txt .
+COPY .env .
+COPY dataset /app/dataset
+
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python", "dataset_collection.py"]

@@ -1,0 +1,65 @@
+services:
+
+  similarity-app:
+    build:
+      context: .
+      dockerfile: Dockerfile_similarity
+    env_file:
+      - .env
+    ports:
+      - "8005:8005"
+    networks:
+      - ragdoc-network
+    volumes:
+      - /home/natcha/rag_document/dataset:/app/dataset
+    depends_on:
+      - ollama  
+    environment:
+      - OLLAMA_HOST=http://ollama:11434  
+
+  streamlit-app:
+    build:
+      context: .
+      dockerfile: Dockerfile_streamlit
+    env_file:
+      - .env
+    ports:
+      - "8501:8501"
+    depends_on:
+      - similarity-app
+    networks:
+      - ragdoc-network
+    volumes:
+      - /home/natcha/rag_document/dataset:/app/dataset
+
+  database-app:
+    build:
+      context: .
+      dockerfile: Dockerfile_database
+    env_file:
+      - .env
+    networks:
+      - ragdoc-network
+    volumes:
+      - /home/natcha/rag_document/dataset:/app/dataset
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - "11435:11434"
+    runtime: nvidia
+    environment:
+      - OLLAMA_DEVICE=gpu
+    networks:
+      - ragdoc-network
+    volumes:
+      - ollama_models:/root/.ollama
+ 
+
+networks:
+  ragdoc-network:
+    external: true
+
+volumes:
+  ollama_models:

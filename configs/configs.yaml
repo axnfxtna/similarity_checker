@@ -1,0 +1,5 @@
+model : 'sentence-transformers/all-MiniLM-L6-v2'
+dataset_folder : '/app/dataset'
+collection_name : 'files'
+dim: 384
+llm_model: 'qwen3:0.6b-q4_K_M'

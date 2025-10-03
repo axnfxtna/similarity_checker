@@ -1,0 +1,15 @@
+FROM python:3.11.13
+
+WORKDIR /app
+
+COPY requirements.txt .
+COPY streamlit_service.py /app/streamlit_service.py
+COPY dataset /app/dataset
+
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["streamlit", "run", "streamlit_service.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
