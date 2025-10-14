@@ -12,9 +12,9 @@ A Streamlit web app for check similarity of the documents with the vector databa
 - **System** : Ubuntu 24.04.2
 - **Frontend**: Streamlit
 - **Backend** : FastAPI
-- **LLM** : ollama
+- **LLM Runtime** : Ollama
 - **Database** : Milvus-standalone(local)
-- **Embedding Models** : all-MiniLM-L6-v
+- **Embedding Model** : all-MiniLM-L6-v
 - **LLM Model** : qwen3:0.6b-q4_K_M
 - **Configs** : Defined in `configs/configs.yaml`
 
