@@ -3,42 +3,46 @@ import tempfile
 import logging
 import uvicorn
 import ollama
+import os
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
+from omegaconf import OmegaConf
 
 from lib.compare import query_with_pdf
-from lib.milvusc import milvus_client 
+from lib.milvusc import milvus_client
 from lib.explain import compare_with_llm
-
-from omegaconf import OmegaConf
 
 logger = logging.getLogger(__name__)
 app = FastAPI()
+
 
 class Payload(BaseModel):
     query_pdf: str  # base64 encoded PDF
     explanation: Optional[bool] = False
 
-# Load configuration
-module_cfg = OmegaConf.load("configs/configs.yaml")
+
+# Load configuration safely
+try:
+    module_cfg = OmegaConf.load("configs/configs.yaml")
+except Exception as e:
+    logger.warning(f"Failed to load config file: {e}")
+    module_cfg = OmegaConf.create({"collection_name": "default_collection", "llm_model": "default_model"})
+
 
 @app.post("/check")
 async def check_similarity(request: Payload, top_k: Optional[int] = 5):
-    # Decode PDF into a temporary file
     pdf_bytes = base64.b64decode(request.query_pdf)
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
         temp_pdf.write(pdf_bytes)
         query_pdf_filepath = temp_pdf.name
 
-    # Load collection
     milvus_client.load_collection(collection_name=module_cfg.collection_name)
-
-    # Run similarity query
     results = query_with_pdf(query_pdf_filepath, top_k=top_k)
 
     return JSONResponse(content={"results": results})
+
 
 @app.post("/explanation")
 async def get_explanation(request: Payload, top_k: Optional[int] = 5):
@@ -65,5 +69,8 @@ async def get_explanation(request: Payload, top_k: Optional[int] = 5):
         "explanations": explanations
     })
 
-if __name__ == "__main__":    
-    uvicorn.run("similarity_service:app", port=8005, host="0.0.0.0", log_level="info")
+
+if __name__ == "__main__":
+    # ✅ Use dynamic port (Railway/Render/Heroku requirement)
+    port = int(os.getenv("PORT", 8005))
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")

@@ -20,7 +20,8 @@ if st.button("Check"):
         st.warning("Please upload a PDF before checking.")
     else:
         payload = {"query_pdf": query_pdf, "explanation": explanation}
-        endpoint = "http://similarity-app:8005/explanation" if explanation else "http://similarity-app:8005/check"
+        BACKEND_URL = st.secrets.get("BACKEND_URL", "http://localhost:8005")  # fallback for local dev
+        endpoint = f"{BACKEND_URL}/explanation" if explanation else f"{BACKEND_URL}/check"
 
         try:
             response = requests.post(endpoint, json=payload)
